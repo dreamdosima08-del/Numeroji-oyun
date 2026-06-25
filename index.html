@@ -115,6 +115,12 @@
   .next{text-align:center;font-size:13px;color:var(--muted);margin-top:18px}
   .next b{color:var(--text);font-variant-numeric:tabular-nums}
 
+  /* funnel CTA */
+  a.btn{text-decoration:none;display:block;text-align:center}
+  .cta-box{margin-top:24px;background:linear-gradient(180deg,var(--ink-3),var(--ink-2));border:1px solid var(--accent);border-radius:var(--r);padding:20px 18px;text-align:center}
+  .cta-q{font-family:"Fraunces",serif;font-size:17px;line-height:1.4;color:var(--text);margin-bottom:16px}
+  .cta{margin:0}
+
   /* how to */
   .help-link{margin-top:26px;text-align:center}
   .help-link button{background:none;border:none;color:var(--muted);font-size:13px;cursor:pointer;font-family:inherit;text-decoration:underline;text-underline-offset:3px}
@@ -179,6 +185,7 @@
     <p>Örnek: <b>SU</b> → S(4) + U(7) = 11 → 1+1 = <b>2</b></p>
     <div class="table" id="helpTable"></div>
     <p>3 tahmin hakkın var. Yanlışta "daha büyük / daha küçük" ipucu alırsın. Seriyi sürdürmek için her gün gel.</p>
+    <p>Aynı yöntemi kendi isminde dene → <a href="https://numerolojim.com.tr" target="_blank" rel="noopener" style="color:var(--accent);font-weight:600">numerolojim.com.tr</a></p>
     <button class="btn primary" id="closeHelp">Anladım</button>
   </div>
 </div>
@@ -190,6 +197,9 @@
    Markayı/kelimeleri değiştirmek için aşağıdaki sabitlere bak.
    ============================================================ */
 
+// --- Yönlendirme: oyuncuları buraya çekeceğiz ---
+var SITE = "https://numerolojim.com.tr";
+
 // --- Harf → sayı tablosu (Türk alfabesi, 1..9 döngüsü) ---
 var TABLO = {
   "A":1,"B":2,"C":3,"Ç":4,"D":5,"E":6,"F":7,"G":8,"Ğ":9,
@@ -198,19 +208,42 @@ var TABLO = {
   "Y":1,"Z":2
 };
 
-// --- Günlük kelime havuzu (nötr, hoş Türkçe kelimeler) ---
+// --- Günlük kelime havuzu (evrensel, nötr Türkçe kelimeler — ~8 ay) ---
 // İstediğin kadar ekle/çıkar. Hepsi BÜYÜK harf ve Türkçe olmalı.
 var KELIMELER = [
-  "DENİZ","ÇINAR","YAYLA","KÖPRÜ","ZEYTİN","NEHİR","ŞAFAK","BULUT","RÜZGAR","TOPRAK",
-  "ORMAN","PINAR","GÜNEŞ","YILDIZ","DAMLA","KARTAL","CEYLAN","MENEKŞE","LALE","NERGİS",
-  "KESTANE","FINDIK","ÇİĞDEM","PAPATYA","SÜMBÜL","KARANFİL","YASEMİN","MANOLYA","ARDIÇ","ÇAĞLA",
-  "DERE","VADİ","ZİRVE","PATİKA","ŞELALE","GÖKKUŞAĞI","KIYI","KUMSAL","FENER","LİMAN",
-  "ARTVİN","HOPA","BORÇKA","ŞAVŞAT","YUSUFELİ","KAÇKAR","ÇORUH","MURGUL","ARHAVİ","KEMALPAŞA",
-  "EMEK","SABIR","UMUT","HUZUR","NEŞE","DOSTLUK","CESARET","ZARAFET","BEREKET","ŞEFKAT",
-  "KİTAP","KALEM","DEFTER","MÜREKKEP","SATIR","HİKAYE","MASAL","TÜRKÜ","NAĞME","DİZE",
-  "BAHAR","YAZ","SONBAHAR","KIŞ","SABAH","AKŞAM","ŞİMŞEK","KAR","YAĞMUR","ÇİY",
-  "BADEM","CEVİZ","KAYISI","ÜZÜM","NAR","İNCİR","ELMA","ARMUT","KİRAZ","DUT",
-  "ARI","KELEBEK","SERÇE","BÜLBÜL","LEYLEK","GÜVERCİN","BALIK","GEYİK","TİLKİ","SİNCAP"
+  // İl isimleri
+  "İSTANBUL","ANKARA","İZMİR","BURSA","ANTALYA","ADANA","KONYA","MERSİN","KAYSERİ","ESKİŞEHİR",
+  "TRABZON","SAMSUN","MALATYA","ERZURUM","AYDIN","DENİZLİ","MUĞLA","MANİSA","SİVAS","TOKAT",
+  "ORDU","RİZE","EDİRNE","ÇANAKKALE","ISPARTA","KÜTAHYA","UŞAK","BOLU","DÜZCE","SAKARYA",
+  "KOCAELİ","YALOVA","BİLECİK","ÇORUM","AMASYA","SİNOP","KASTAMONU","ÇANKIRI","AKSARAY","NEVŞEHİR",
+  "NİĞDE","KARAMAN","BURDUR","HATAY","OSMANİYE","MARDİN","BATMAN","SİİRT","BİTLİS","BİNGÖL",
+  "ELAZIĞ","ERZİNCAN","GÜMÜŞHANE","BAYBURT","GİRESUN","ZONGULDAK","KARABÜK","BARTIN","KIRŞEHİR","YOZGAT",
+  // Doğa
+  "DENİZ","NEHİR","ORMAN","VADİ","ZİRVE","ŞELALE","OKYANUS","ADA","ÇÖL","VOLKAN",
+  "MAĞARA","KANYON","YAYLA","OVA","TEPE","KUMSAL","BULUT","GÜNEŞ","YILDIZ","GEZEGEN",
+  "ŞİMŞEK","YAĞMUR","RÜZGAR","ŞAFAK","BAHAR","YAZ","KIŞ","GÖKKUŞAĞI","PINAR","DAMLA",
+  // Hayvanlar
+  "ASLAN","KAPLAN","ZÜRAFA","CEYLAN","GEYİK","TİLKİ","KURT","AYI","TAVŞAN","SİNCAP",
+  "KARTAL","ŞAHİN","BAYKUŞ","SERÇE","BÜLBÜL","LEYLEK","MARTI","YUNUS","AHTAPOT","KELEBEK",
+  "KARINCA","PANDA","PENGUEN","ZEBRA","TİMSAH","BALİNA","GÜVERCİN","ARI","BALIK","KAPLUMBAĞA",
+  // Bitkiler ve meyveler
+  "GÜL","LALE","MENEKŞE","PAPATYA","NERGİS","SÜMBÜL","KARANFİL","YASEMİN","MANOLYA","ORKİDE",
+  "ZAMBAK","ÇINAR","MEŞE","KAVAK","SÖĞÜT","KESTANE","ÇAM","ARDIÇ","ZEYTİN","BADEM",
+  "CEVİZ","FINDIK","KAYISI","ÜZÜM","NAR","İNCİR","ELMA","ARMUT","KİRAZ","ÇİLEK",
+  "KARPUZ","KAVUN","PORTAKAL","LİMON","MANDALİNA","MUZ","AVOKADO","NANE","KEKİK","LAVANTA",
+  // Renkler
+  "KIRMIZI","MAVİ","YEŞİL","SARI","MOR","TURUNCU","PEMBE","LACİVERT","TURKUAZ","BORDO",
+  "BEYAZ","SİYAH","ALTIN","GÜMÜŞ","KAHVE","BEJ",
+  // Kavramlar
+  "UMUT","SABIR","EMEK","HUZUR","NEŞE","SEVİNÇ","DOSTLUK","CESARET","ZARAFET","NEZAKET",
+  "MERAK","HAYAL","ÖZGÜRLÜK","BARIŞ","UYUM","DENGE","GÜVEN","SADAKAT","BİLGELİK","YARATICILIK",
+  // Şeyler ve nesneler
+  "KİTAP","KALEM","DEFTER","MÜZİK","MELODİ","RESİM","DANS","ŞİİR","MASAL","HİKAYE",
+  "PUSULA","HARİTA","FENER","ANAHTAR","KÖPRÜ","KULE","SARAY","BAHÇE","ÇEŞME","LİMAN",
+  "GEMİ","TREN","BALON","UÇURTMA","SAAT","AYNA","MUM","YELKEN","KANDİL","ZİL",
+  // Dünya şehirleri
+  "PARİS","LONDRA","ROMA","TOKYO","ATİNA","VİYANA","BERLİN","MADRİD","VENEDİK","MOSKOVA",
+  "KAHİRE","BARSELONA","PRAG","LİZBON","DUBLİN"
 ];
 
 // --- Tarih anahtarı ve günlük seçim ---
@@ -357,8 +390,12 @@ function bitir(kazandi){
         '<div class="tiles">'+tilesHtml+'</div>'+
         '<div class="sum-line">Toplam <b>'+COZUM.toplam+'</b><span class="arrow">→</span>tek hane <b>'+COZUM.cevap+'</b></div>'+
       '</div>'+
+      '<div class="cta-box">'+
+        '<div class="cta-q">Peki ya kendi ismin? Harflerinin topladığı sayı kaç?</div>'+
+        '<a class="btn primary cta" href="'+SITE+'" target="_blank" rel="noopener">İsmimin sayısını hesapla →</a>'+
+      '</div>'+
       '<div class="actions">'+
-        '<button class="btn primary" id="shareBtn">Sonucu paylaş</button>'+
+        '<button class="btn" id="shareBtn">Sonucu paylaş</button>'+
       '</div>'+
       '<div class="next">Yeni kelime <b id="geri"></b> sonra</div>'+
     '</div>';
